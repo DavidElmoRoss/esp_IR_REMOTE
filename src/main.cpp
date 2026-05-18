@@ -15,27 +15,27 @@
 */
 
 #include "arduino.h"                                // add arduino library
-#include <IRremote.h>                               // add IRremote library
+#define SEND_PWM_BY_TIMER
+#include <IRremote.hpp>
 
-int RECV_PIN = 2;                                   // Infrared receiver pin
-IRrecv irrecv(RECV_PIN);                            // Create a class object used to receive class
-decode_results results;                             // Create a decoding results class object
-
+#define IR_RECEIVE_PIN 2                                   // Infrared receiver pin
+                         
 void setup()
 {
   Serial.begin(9600);                               // Initialize serial port to 9600
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);   
   printf("\e[2;1H");                                // set cursor to (2,1) on screen
   printf("\e[2J");                                  // clear PC screen
   printf("Ir Receiver is ready!\n");                // Print "Ir Receiver is ready!"
-  irrecv.enableIRIn();                              // Start the receiver
 }
 
 void loop() 
 {
-  if (irrecv.decode(&results))                      // if Ir Value has been received
+  if (IrReceiver.decode())                          // if Ir Value has been received
   {  
-    Serial.println(results.value, HEX);             // Print out the decoded results in HEX
-    irrecv.resume();                                // Receive the next value
+    //  Print out the decoded results in HEX
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);             
+    IrReceiver.resume();                            // Receive the next value
   }
   delay(500);                                       // delay 0.5 seconds
 }
